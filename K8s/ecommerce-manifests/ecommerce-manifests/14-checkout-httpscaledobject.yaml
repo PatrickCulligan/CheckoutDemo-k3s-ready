@@ -1,0 +1,19 @@
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: checkout-http
+  namespace: ecommerce
+spec:
+  hosts:
+    - ""
+  pathPrefixes:
+    - /checkout
+  scaleTargetRef:
+    name: checkout
+    service: checkout
+    port: 8080
+  replicas:
+    min: 0
+    max: 10
+  scaledownPeriod: 60
+  targetPendingRequests: 1

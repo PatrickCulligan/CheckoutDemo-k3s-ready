@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing
+  namespace: ecommerce
+  labels:
+    app: pricing
+spec:
+  selector:
+    app: pricing
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

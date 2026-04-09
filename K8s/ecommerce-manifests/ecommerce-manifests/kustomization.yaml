@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - 00-namespace.yaml
+  - 01-postgres-secret.yaml
+  - 02-postgres-pvc.yaml
+  - 03-postgres-deployment.yaml
+  - 04-postgres-service.yaml
+  - 05-pricing-deployment.yaml
+  - 06-pricing-service.yaml
+  - 07-inventory-deployment.yaml
+  - 08-inventory-service.yaml
+  - 09-checkout-deployment.yaml
+  - 10-checkout-service.yaml
+  - 11-gateway-deployment.yaml
+  - 12-gateway-service.yaml
+  - 13-keda-externalname-service.yaml
+  - 14-checkout-httpscaledobject.yaml
+  - 15-gateway-ingress.yaml

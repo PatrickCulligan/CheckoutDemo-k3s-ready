@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: ecommerce
+  labels:
+    app: checkout
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      containers:
+        - name: checkout
+          image: pjculligan/checkoutdemo-k3s-ready-checkout:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://0.0.0.0:8080
+            - name: Services__PricingBaseUrl
+              value: http://pricing:8080
+            - name: Services__InventoryBaseUrl
+              value: http://inventory:8080
+            - name: ConnectionStrings__Postgres
+              value: Host=postgres;Port=5432;Database=checkoutdb;Username=postgres;Password=postgres
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
