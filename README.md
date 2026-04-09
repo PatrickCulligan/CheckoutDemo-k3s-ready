@@ -1,5 +1,9 @@
 # CheckoutDemo K3s-ready
 
+## Run in K3s
+
+In K8s folder file kubectl apply -f ecommerce.yaml to run all services
+
 ## Run locally with Docker Compose
 
 ```powershell
@@ -10,10 +14,10 @@ docker compose up --build -d
 ## Test
 
 ```powershell
-Invoke-RestMethod -Method GET -Uri "http://localhost:5001/api/ping"
+Invoke-RestMethod -Method GET -Uri "http://localhost/api/ping"
 
 Invoke-RestMethod -Method POST `
-  -Uri "http://localhost:5001/api/checkout" `
+  -Uri "http://localhost/checkout" `
   -Headers @{ "X-Request-Id" = "demo-123" } `
   -ContentType "application/json" `
   -Body '{"itemId":"SKU-1","quantity":2}'
