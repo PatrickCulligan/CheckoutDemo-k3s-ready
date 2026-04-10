@@ -15,6 +15,15 @@ stringData:
   POSTGRES_PASSWORD: postgres
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: checkout-secret
+  namespace: ecommerce
+type: Opaque
+stringData:
+  ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=checkoutdb;Username=postgres;Password=postgres"
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
@@ -251,7 +260,10 @@ spec:
             - name: Services__InventoryBaseUrl
               value: http://inventory:8080
             - name: ConnectionStrings__Postgres
-              value: Host=postgres;Port=5432;Database=checkoutdb;Username=postgres;Password=postgres
+              valueFrom:
+                secretKeyRef:
+                  name: checkout-secret
+                  key: ConnectionStrings__Postgres
           readinessProbe:
             httpGet:
               path: /health
