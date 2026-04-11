@@ -4,15 +4,49 @@ metadata:
   name: ecommerce
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: ecommerce
+data:
+  POSTGRES_DB: checkoutdb
+  POSTGRES_USER: postgres
+  PGDATA: /var/lib/postgresql/data/pgdata
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secret
   namespace: ecommerce
 type: Opaque
 stringData:
-  POSTGRES_DB: checkoutdb
-  POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pricing-config
+  namespace: ecommerce
+data:
+  ASPNETCORE_URLS: http://0.0.0.0:8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-config
+  namespace: ecommerce
+data:
+  ASPNETCORE_URLS: http://0.0.0.0:8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checkout-config
+  namespace: ecommerce
+data:
+  ASPNETCORE_URLS: http://0.0.0.0:8080
+  Services__PricingBaseUrl: http://pricing:8080
+  Services__InventoryBaseUrl: http://inventory:8080
 ---
 apiVersion: v1
 kind: Secret
@@ -22,6 +56,14 @@ metadata:
 type: Opaque
 stringData:
   ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=checkoutdb;Username=postgres;Password=postgres"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: ecommerce
+data:
+  ASPNETCORE_URLS: http://0.0.0.0:8080
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -61,13 +103,13 @@ spec:
           env:
             - name: POSTGRES_DB
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
+                configMapKeyRef:
+                  name: postgres-config
                   key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
+                configMapKeyRef:
+                  name: postgres-config
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -75,7 +117,10 @@ spec:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
             - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: PGDATA
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
@@ -142,7 +187,10 @@ spec:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_URLS
-              value: http://0.0.0.0:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: pricing-config
+                  key: ASPNETCORE_URLS
           readinessProbe:
             httpGet:
               path: /health
@@ -198,7 +246,10 @@ spec:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_URLS
-              value: http://0.0.0.0:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: inventory-config
+                  key: ASPNETCORE_URLS
           readinessProbe:
             httpGet:
               path: /health
@@ -254,11 +305,20 @@ spec:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_URLS
-              value: http://0.0.0.0:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-config
+                  key: ASPNETCORE_URLS
             - name: Services__PricingBaseUrl
-              value: http://pricing:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-config
+                  key: Services__PricingBaseUrl
             - name: Services__InventoryBaseUrl
-              value: http://inventory:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-config
+                  key: Services__InventoryBaseUrl
             - name: ConnectionStrings__Postgres
               valueFrom:
                 secretKeyRef:
@@ -319,7 +379,10 @@ spec:
             - containerPort: 8080
           env:
             - name: ASPNETCORE_URLS
-              value: http://0.0.0.0:8080
+              valueFrom:
+                configMapKeyRef:
+                  name: gateway-config
+                  key: ASPNETCORE_URLS
           readinessProbe:
             httpGet:
               path: /api/ping
