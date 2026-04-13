@@ -8,6 +8,9 @@
 
 <img width="481" height="503" alt="image" src="https://github.com/user-attachments/assets/0574b7e1-3059-4397-bcf4-0fe2730da491" />
 
+##Request Flow with Correlation ID (Diagram B)
+
+<img width="932" height="638" alt="image" src="https://github.com/user-attachments/assets/51db1e8d-784c-40bd-b322-c86dd0365e57" />
 
 
 ## Run in K3s
