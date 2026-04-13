@@ -1,4 +1,14 @@
+
+
+
+
 # CheckoutDemo K3s-ready
+
+##System Architecture Diagram (Diagram A)
+
+<img width="481" height="503" alt="image" src="https://github.com/user-attachments/assets/0574b7e1-3059-4397-bcf4-0fe2730da491" />
+
+
 
 ## Run in K3s
 
